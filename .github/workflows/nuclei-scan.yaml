@@ -15,12 +15,9 @@ jobs:
 
       - name: Install Nuclei and jq
         run: |
-          sudo apt-get update
-          sudo apt-get install -y jq unzip curl
-          curl -sL https://github.com/projectdiscovery/nuclei/releases/latest/download/nuclei-linux-amd64.zip -o nuclei.zip
-          unzip nuclei.zip
-          chmod +x nuclei
-          sudo mv nuclei /usr/local/bin/
+          udo apt-get update
+          sudo apt-get install -y jq curl
+          curl -sL https://install.projectdiscovery.io | bash
 
       - name: Run Nuclei scan and save JSON
         run: |
