@@ -1,11 +1,13 @@
 name: Nuclei - Vulnerability Scan
 
-on:
-  workflow_dispatch:
 
+
+on:
+    workflow_dispatch:
 permissions:
   contents: read
   security-events: write
+      
 
 jobs:
   nuclei-scan:
@@ -13,26 +15,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Nuclei and jq
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y jq curl tar
-          curl -LO https://github.com/projectdiscovery/nuclei/releases/download/v3.1.8/nuclei_3.1.8_linux_amd64.tar.gz
-          tar -xvzf nuclei_3.1.8_linux_amd64.tar.gz
-          chmod +x nuclei
-          sudo mv nuclei /usr/local/bin/
-
-      - name: Run Nuclei scan and save JSON
-        run: |
-          nuclei -target https://animated-space-broccoli-pp64rwg4g7436w9j-3000.app.github.dev/ -json > nuclei.json
-
-      - name: Convert JSON to SARIF
-        run: |
-          curl -L -o nuclei-to-sarif https://github.com/juice-shop/nuclei-to-sarif/releases/latest/download/nuclei-to-sarif-linux
-          chmod +x nuclei-to-sarif
-          ./nuclei-to-sarif -input nuclei.json -output nuclei.sarif
-
-      - name: Upload SARIF to GitHub Security Dashboard
+      - name: Nuclei - Vulnerability Scan
+        id: nuclei_scan
+        uses: projectdiscovery/nuclei-action@main
+        with:
+          target: https://animated-space-broccoli-pp64rwg4g7436w9j-3000.app.github.dev/
+      - name: GitHub Workflow artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuclei.log
+          path: nuclei.log
+          github-report: true
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: GitHub Security Dashboard Alerts update
         uses: github/codeql-action/upload-sarif@v3
+        if: steps.nuclei_scan.outputs.sarif_exists == 'true'
         with:
           sarif_file: nuclei.sarif
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
