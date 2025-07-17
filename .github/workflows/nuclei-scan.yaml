@@ -5,6 +5,7 @@ on:
 permissions:
   contents: read
   security-events: write
+  issues: write
       
 
 jobs:
@@ -23,6 +24,8 @@ jobs:
         with:
           name: nuclei.log
           path: nuclei.log
+          github-report: true
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           
       - name: GitHub Security Dashboard Alerts update
         uses: github/codeql-action/upload-sarif@v3
