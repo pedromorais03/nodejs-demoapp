@@ -23,7 +23,7 @@ jobs:
         uses: SonarSource/sonarqube-scan-action@v5
         with:
           args: >
-            -Dsonar.projectKey=ghscd2025key_ghscd-project
-            -Dsonar.organization=ghscd2025key
+            -Dsonar.projectKey=ghscd2025key2_ghscd-project
+            -Dsonar.organization=ghscd2025key2
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
