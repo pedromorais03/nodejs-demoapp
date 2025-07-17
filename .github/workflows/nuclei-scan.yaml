@@ -1,0 +1,35 @@
+name: Nuclei - Vulnerability Scan
+
+on:
+    workflow_dispatch:
+permissions:
+  contents: read
+  security-events: write
+      
+
+jobs:
+  nuclei-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Nuclei - Vulnerability Scan
+        id: nuclei_scan
+        uses: projectdiscovery/nuclei-action@main
+        with:
+          target: https://animated-space-broccoli-pp64rwg4g7436w9j-3000.app.github.dev/
+      - name: GitHub Workflow artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuclei.log
+          path: nuclei.log
+          github-report: true
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: GitHub Security Dashboard Alerts update
+        uses: github/codeql-action/upload-sarif@v3
+        if: steps.nuclei_scan.outputs.sarif_exists == 'true'
+        with:
+          sarif_file: nuclei.sarif
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
