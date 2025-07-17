@@ -15,7 +15,7 @@ jobs:
 
       - name: Install Nuclei and jq
         run: |
-          udo apt-get update
+          sudo apt-get update
           sudo apt-get install -y jq curl
           curl -sL https://install.projectdiscovery.io | bash
 
